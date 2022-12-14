@@ -33,7 +33,7 @@ spec:
           resources: {}
       restartPolicy: Always
       nodeSelector:
-        kubernetes.io/hostname: aks-multizone-35578676-vmss000001
+        kubernetes.io/hostname: [hostname]
 status: {}
 
 

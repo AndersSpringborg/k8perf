@@ -1,0 +1,20 @@
+-----------------------------------------------------------
+Server listening on 5201
+-----------------------------------------------------------
+Accepted connection from 172.31.54.223, port 54488
+[  5] local 172.31.31.117 port 5201 connected to 172.31.54.223 port 54498
+[ ID] Interval           Transfer     Bitrate
+[  5]   0.00-1.00   sec   564 MBytes  4.73 Gbits/sec                  
+[  5]   1.00-2.00   sec   592 MBytes  4.96 Gbits/sec                  
+[  5]   2.00-3.00   sec   592 MBytes  4.96 Gbits/sec                  
+[  5]   3.00-4.00   sec   592 MBytes  4.96 Gbits/sec                  
+[  5]   4.00-5.00   sec   592 MBytes  4.96 Gbits/sec                  
+[  5]   5.00-6.00   sec   580 MBytes  4.87 Gbits/sec                  
+[  5]   6.00-7.00   sec   592 MBytes  4.96 Gbits/sec                  
+[  5]   7.00-8.00   sec   592 MBytes  4.96 Gbits/sec                  
+[  5]   8.00-9.00   sec   592 MBytes  4.96 Gbits/sec                  
+[  5]   9.00-10.00  sec   590 MBytes  4.95 Gbits/sec                  
+[  5]  10.00-10.05  sec  27.0 MBytes  4.96 Gbits/sec                  
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate
+[  5]   0.00-10.05  sec  5.76 GBytes  4.93 Gbits/sec                  receiver

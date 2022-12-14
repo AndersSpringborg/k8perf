@@ -1,0 +1,21 @@
+-----------------------------------------------------------
+Server listening on 5201
+-----------------------------------------------------------
+Accepted connection from 172.31.3.41, port 42734
+[  5] local 172.31.56.206 port 5201 connected to 172.31.3.41 port 42744
+[ ID] Interval           Transfer     Bandwidth
+[  5]   0.00-1.00   sec   559 MBytes  4.69 Gbits/sec                  
+[  5]   1.00-2.00   sec   592 MBytes  4.97 Gbits/sec                  
+[  5]   2.00-3.00   sec   592 MBytes  4.97 Gbits/sec                  
+[  5]   3.00-4.00   sec   592 MBytes  4.97 Gbits/sec                  
+[  5]   4.00-5.00   sec   592 MBytes  4.97 Gbits/sec                  
+[  5]   5.00-6.00   sec   592 MBytes  4.97 Gbits/sec                  
+[  5]   6.00-7.00   sec   592 MBytes  4.97 Gbits/sec                  
+[  5]   7.00-8.00   sec   592 MBytes  4.97 Gbits/sec                  
+[  5]   8.00-9.00   sec   592 MBytes  4.97 Gbits/sec                  
+[  5]   9.00-10.00  sec   592 MBytes  4.97 Gbits/sec                  
+[  5]  10.00-10.04  sec  23.7 MBytes  4.96 Gbits/sec                  
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bandwidth
+[  5]   0.00-10.04  sec  0.00 Bytes  0.00 bits/sec                  sender
+[  5]   0.00-10.04  sec  5.77 GBytes  4.94 Gbits/sec                  receiver

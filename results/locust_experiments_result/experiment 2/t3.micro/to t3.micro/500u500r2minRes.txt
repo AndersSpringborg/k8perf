@@ -1,0 +1,3 @@
+NAME                                          CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%
+ip-172-31-39-72.us-west-2.compute.internal    232m         12%    385Mi           69%       server
+ip-172-31-50-114.us-west-2.compute.internal   988m         51%    429Mi           77%       client

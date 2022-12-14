@@ -16,5 +16,5 @@ spec:
       labels:
         app: iperf3-client
       nodeSelector:
-        kubernetes.io/hostname: aks-agentpool-45773067-vmss000000
+        kubernetes.io/hostname: [hostname]
   backoffLimit: 4

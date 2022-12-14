@@ -1,0 +1,14 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: locust-client
+spec:
+  template:
+    spec:
+      containers:
+      - image: 065885464246.dkr.ecr.us-west-2.amazonaws.com/cse291:latest
+        name: locust-client
+      restartPolicy: Never
+      nodeSelector:
+        kubernetes.io/hostname: ip-172-31-50-114.us-west-2.compute.internal
+  backoffLimit: 4
