@@ -12,7 +12,8 @@ python -m k8perf
 
 You can get a json output from the command line by adding the `--json` flag.
 
-Local:
+
+## Contributing
 #### Virtualenv
 you can activate the virtualenv with the following command:
 ```bash
@@ -28,3 +29,10 @@ There are two files in the folder `bandwidth`:
 - the server `iperf3-server.yaml`
 - the client `iperf3-client.yaml`
 
+
+
+#### TODO
+- [ ] add a way to specify the namespace
+- [ ] Run http benchmark until the server is up to 90% cpu usage
+- [ ] loading bar for the benchmark
+- [ ] Stream the output of the benchmark (Use streamlit)
