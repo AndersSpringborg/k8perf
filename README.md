@@ -7,7 +7,7 @@ This is a benchmark application for kubernetes. It is used to test network perfo
 install this python package, a place where you have a kubernetes config file, and run the following command:
 ```
 pip install k8perf
-python -m k8perf
+python -m k8perf run
 ```
 
 You can get a json output from the command line by adding the `--json` flag.
