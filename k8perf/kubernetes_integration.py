@@ -38,11 +38,11 @@ class KubernetesIntegration:
                 if resp.status.ready_replicas == resp.status.replicas:
                     break
                 else:
-                    info("Waiting: Deployment not ready")
+                    info(f"Waiting: Deployment not ready `{name}`")
                     sleep(2)
         elif resource_type == "Job":
             timer = 0
-            info("Waiting: Job not finished")
+            info(f"Waiting: Job not finished `{name}`")
             while timer < 120:
                 resp = self.batch_v1.read_namespaced_job_status(
                     name=name, namespace=self.namespace
@@ -62,7 +62,7 @@ class KubernetesIntegration:
                     )
                     break
                 except NotFoundError as e:
-                    info("Waiting: Service not ready")
+                    info(f"Waiting: Service not ready `{name}`")
                     sleep(2)
 
         else:
@@ -101,15 +101,15 @@ class KubernetesIntegration:
         )
 
     def get_job_logs(self, kube_resource):
-        debug("Getting logs from job")
+        debug(f"Getting logs from job `{kube_resource}`")
         # wait for job to finish
         self.wait_for_resource(kube_resource, "Job")
 
         # get pod with job selector
         from kubernetes.client import V1PodList
-
+        pod_selector = f"job-name={kube_resource['metadata']['name']}"
         api_response: V1PodList = self.core_v1.list_namespaced_pod(
-            namespace=self.namespace, label_selector="job-name=iperf3-client"
+            namespace=self.namespace, label_selector=pod_selector
         )
 
         # select pod with status condition reason PodCompleted
