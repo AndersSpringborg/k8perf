@@ -1,14 +1,17 @@
 import json
 import logging
-from typing import Dict
+from enum import Enum
+from pathlib import Path
+from typing import Dict, Literal
 import matplotlib.pyplot as plt
-import numpy as np
 
+import seaborn as sns
 import pandas as pandas
 import typer
 from kubernetes import config
 from kubernetes.client import V1NodeList, V1Node
 from rich.pretty import pprint
+from rich import print
 
 from k8perf.benchmark import BenchmarkRunner
 from k8perf.benchmarks import IPerfBenchmark
@@ -61,7 +64,7 @@ def benchmark_all_nodes(nodes: V1NodeList.items):
 
 
 @app.command()
-def kubernetes(delete_pods: bool = True, debug: bool = False, json: bool = False, all_nodes: bool = False,
+def run(delete_pods: bool = True, debug: bool = False, json: bool = False, all_nodes: bool = False,
                plot: bool = False, csv: str = None):
     if debug:
         logging.getLogger().setLevel(logging.DEBUG)
@@ -78,10 +81,12 @@ def kubernetes(delete_pods: bool = True, debug: bool = False, json: bool = False
         raise typer.Exit()
 
     node_names = [node.metadata.name for node in nodes]
+    # remove from memory
     nodes = None
 
     server_nodes = terminal_menu("Choose a server to run on:", node_names)
     client_nodes = terminal_menu("Choose a client to run on:", node_names)
+    # remove from memory
     node_names = None
     if "None" in client_nodes or "None" in server_nodes:
         typer.echo("Exiting...")
@@ -99,8 +104,10 @@ def kubernetes(delete_pods: bool = True, debug: bool = False, json: bool = False
             TextColumn("[progress.description]{task.description}"),
             transient=True,
     ) as progress:
+        task = progress.add_task("Running benchmark...", total=1)
         runner = BenchmarkRunner(client_node_names=client_nodes, server_node_names=server_nodes)
         runner.run()
+        progress.update(task, advance=1, description="Cleaning up...")
         if delete_pods:
             runner.cleanup()
 
@@ -118,132 +125,127 @@ def kubernetes(delete_pods: bool = True, debug: bool = False, json: bool = False
     typer.echo("Done!")
 
 
-@app.command()
-def plot_latency():
-    df = pandas.read_csv("benchmark.csv")
-
-    df = df.pivot(index="client_node", columns="server_node", values="mbps")
-
-    plot_from_df(df, {
-        "aks-agentpool-45773067-vmss000000": "US East AZ-1 D4v2",
-        "aks-multizone-35578676-vmss000000": "US East AZ-2 B2",
-        "aks-multizone-35578676-vmss000001": "US East AZ-2 B2"}
-                 , "Blues",
-                 lambda val: "white" if val > 1e10 else "black",
-                 lambda val: bytes_to_human_readable(val),
-                 "Mbps between availability zones d3")
+def merge_two_columns_to_one(df: pandas.DataFrame, column1: str, column2: str):
+    df[column1] = df[column1].fillna(df[column2])
+    return df
 
 
-@app.command()
-def plot_rtt():
-    df = pandas.read_csv("benchmark.csv")
-
-    df = df.pivot(index="client_node", columns="server_node", values="mean_rtt")
-    plot_from_df(df, {
-        "aks-agentpool-45773067-vmss000000": "US East AZ-1 D4v2",
-        "aks-multizone-35578676-vmss000000": "US East AZ-2 B2",
-        "aks-multizone-35578676-vmss000001": "US East AZ-2 B2"}
-                 , "hot",
-                 lambda value: "white" if value < 7000 else "black",
-                 lambda val: str(val) + "ms",
-                 "RTT on d3 (most popular azure)")
+def replace_own_values(rtt, own, new_node):
+    rtt[own][own] = rtt[own][new_node]
+    return rtt.drop(new_node)
 
 
-@app.command()
-def plot_rets():
-    df = pandas.read_csv("benchmark.csv")
+def rename_df_columns_and_roows(rtt, renaming):
+    """
+    Exmaple:
+    renaming = {
+        "aks-az1-52939702-vmss000000": "US West AZ-1",
+        "aks-az2-26374771-vmss000000": "US East AZ-2",
+        "aks-az3-17689621-vmss000000": "US West AZ-3"}
+    :param rtt:
+    :param renaming:
+    :return:
+    """
+    rtt = rtt.rename(columns=renaming)
+    rtt = rtt.rename(index=renaming)
+    return rtt
 
-    df = df.pivot(index="client_node", columns="server_node", values="retransmits")
-    plot_from_df(df, {
-        "aks-agentpool-45773067-vmss000000": "US East AZ-1 D4v2",
-        "aks-multizone-35578676-vmss000000": "US East AZ-2 B2",
-        "aks-multizone-35578676-vmss000001": "US East AZ-2 B2"}
-                 , "Greens",
-                 lambda value: "white" if value > 4000 else "black",
-                 lambda val: str(val),
-                 "retransmissions")
 
+def make_image(df, value, json_key, title, directory, vmin=None, vmax=None, fmt=".2f"):
+    logging.info(f"Making image for {json_key}")
+    try:
+        rtt = df.pivot(index="client_node", columns="server_node", values=json_key)
+    except KeyError:
+        logging.error(f"Could not find {json_key} in dataframe")
+        return
 
-# colorpicker: (value: Any) -> str
-def plot_from_df(df, type_mapping: Dict, colormap: str, color_picker, annotation, title: str):
-    print(df)
-    server_names = [type_mapping[node] for node in df.columns.tolist()]
-    client_names = [type_mapping[node] for node in df.index.tolist()]
-    from matplotlib.figure import Figure
-    from matplotlib.axes import Axes
-    fig: Figure
-    ax: Axes
-    fig, ax = plt.subplots()
-    im = ax.imshow(df, cmap=colormap)
-    # Show all ticks and label them with the respective list entries
-    ax.set_xticks(np.arange(len(server_names)), labels=server_names)
-    ax.set_yticks(np.arange(len(client_names)), labels=client_names)
-    # Rotate the tick labels and set their alignment.
-    plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
-             rotation_mode="anchor")
-    # fix tickrate to human readable
-    fig.colorbar(im)
-    ax.set_xlabel("server")
-    ax.set_ylabel("client")
-    for i in range(len(client_names)):
-        for j in range(len(server_names)):
-            color = color_picker(df.iloc[i, j])
-            text = ax.text(j, i, annotation(df.iloc[i, j]),
-                           ha="center", va="center", color=color)
-    ax.set_title(title)
-    fig.tight_layout()
+    sns.heatmap(rtt, annot=True, annot_kws={"size": 17}, fmt=fmt, vmin=vmin, vmax=vmax)
+    plt.title("D4s_v4 " + title, fontsize=20)
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
+    plt.savefig(directory + value + ".png", dpi=150, bbox_inches="tight")
     plt.show()
 
 
-@app.command()
-def parse_json():
-    json_b = ""
-    with open("benchmark.json") as f:
-        json_b = f.read()
-
-    benchmark_pd = pandas.DataFrame()
-    benchmarks = json.loads(json_b)
-    benchmarks.reverse()
-    node_names = ["aks-agentpool-45773067-vmss000000", "aks-multizone-35578676-vmss000000",
-                  "aks-multizone-35578676-vmss000001"]
-    for client_node in node_names:
-        for server_node in node_names:
-            mbps, cpu_host, cpu_client, mean_rtt, retransmits = parse_benchmark_json(benchmarks.pop())
-            benchmark_pd = benchmark_pd.append(
-                {
-                    "client_node": client_node,
-                    "server_node": server_node,
-                    "mbps": mbps,
-                    "cpu_host": cpu_host,
-                    "cpu_client": cpu_client,
-                    "mean_rtt": mean_rtt,
-                    "retransmits": retransmits
-
-                },
-                ignore_index=True,
-            )
-
-    print(benchmark_pd)
-    benchmark_pd.to_csv("benchmark.csv")
+class PlotMetrics(str, Enum):
+    rtt = "rtt"
+    mbps = "mbps"
+    cpu_server = "cpu_host"
+    cpu_client = "cpu_client"
+    retransmits = "retransmits"
+    httpAverageResponseTime = "httpAverageResponseTime"
+    all = "all"
 
 
-@app.command()
-def mbps(_mbps: float):
-    typer.echo(bytes_to_human_readable(_mbps * 1e6))
+class PlotMetricsFrontend(str, Enum):
+    rtt = "rtt"
+    mbps = "mbps"
+    cpu_host = "cpu-s"
+    cpu_client = "cpu-c"
+    retransmits = "retrans"
+    httpAverageResponseTime = "http"
+    all = "all"
+
+    def map(self):
+        mapping = {
+            "rtt": PlotMetrics.rtt,
+            "mbps": PlotMetrics.mbps,
+            "cpu-s": PlotMetrics.cpu_server,
+            "cpu-c": PlotMetrics.cpu_client,
+            "retrans": PlotMetrics.retransmits,
+            "http": PlotMetrics.httpAverageResponseTime,
+            "all": PlotMetrics.all,
+
+        }
+        return mapping[self._value_]
 
 
 @app.command()
-def money():
-    df = pandas.read_csv("/Users/andersspringborg/Downloads/Splitwise expenses Nov 30.csv")
-    costs_where_steffi_is_minus = df["Cost"].where(df["Steffi"] < 0).dropna()
-    # parse cost column into int
-    list_of_people = ["Steffi", "Fine", "Anders Aaen Springborg", "Nicolai", "Nani Kang", "Paul Volk", "Michelle",
-                      "Patrick"]
-    df = df.assign(Cost=df["Cost"].str.replace(" ", "0").astype(float))
-    people_in_plus = [(person, (df["Cost"].where(df[person] > 0).dropna()).sum()) for person in list_of_people]
+def heatmap(csv_file_path: Path, image_output_directory: Path, metric: PlotMetricsFrontend = PlotMetricsFrontend.all):
+    if not csv_file_path.exists():
+        typer.echo("File does not exist")
+        raise typer.Abort()
+    if not csv_file_path.suffix == ".csv":
+        print("[yellow]File is not a csv file[/yellow]")
+        if not typer.confirm("Do you want to continue?"):
+            raise typer.Abort()
+    if not image_output_directory.exists():
+        typer.echo("Directory does not exist, creating it")
+        image_output_directory.mkdir(parents=True)
+    if not image_output_directory.is_dir():
+        typer.echo("Path is not a directory")
+        raise typer.Abort()
+    metric = metric.map()
 
-    pprint(people_in_plus)
-    # print(costs_where_steffi_is_minus.sum())
+    df = pandas.read_csv(csv_file_path)
+    client_nodes = df["client_node"].unique()
+    server_nodes = df["server_node"].unique()
+    server_and_client_nodes_names = server_nodes.tolist() + client_nodes.tolist()
+    # find uniques and sort them
+    server_and_client_nodes_names = list(set(server_and_client_nodes_names))
+    # server_and_client_nodes_names.sort()
+    logging.debug("All plotting nodes: ", server_and_client_nodes_names)
+    all_metrics = metric == "all"
+    if all_metrics:
+        logging.info("Plotting all metrics")
+
+    path = image_output_directory.as_posix() + "/"
+    if all_metrics or metric == "rtt":
+        # divide mean rtt with 1000 for ms
+        df["mean_rtt"] = df["mean_rtt"] / 1000
+        make_image(df, "rtt", "mean_rtt", "RTT in ms", path, fmt=".1f")
+    if all_metrics or metric == "mbps":
+        df["mbps"] = df["mbps"] / 1000
+        make_image(df, "mbps", "mbps", "Throughput in Gbps", path)
+    if all_metrics or metric == "cpu_host":
+        make_image(df, "cpu_host", "cpu_host", "CPU Host %", path, fmt=".1f")
+    if all_metrics or metric == "cpu_client":
+        make_image(df, "cpu_client", "cpu_client", "CPU Client %", path, fmt=".1f")
+    if all_metrics or metric == "retransmits":
+        make_image(df, "retransmits", "retransmits", "Retransmits", path, fmt=".0f")
+    if all_metrics or metric == "httpAverageResponseTime":
+        make_image(df, "httpAverageResponseTime", "httpAverageResponseTime", "HTTP Average Response Time", path,
+                   fmt=".1f")
 
 
 if __name__ == "__main__":
