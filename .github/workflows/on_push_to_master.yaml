@@ -8,7 +8,6 @@ permissions:
 jobs:
   publish:
     name: PyPI - Publish if this is a tagged commit
-    needs: [verify_docker_build, tests]
     if: startsWith(github.event.ref, 'refs/tags') && github.repository_owner == '888aaen'
     runs-on: ubuntu-latest
     steps:
@@ -35,7 +34,6 @@ jobs:
 
   publish_prerelease:
     name: PyPI - Publish prerelease on merge commit on master
-    needs: tests
     if: github.ref == 'refs/heads/master' && github.repository_owner == '888aaen'
     runs-on: ubuntu-latest
     steps:
