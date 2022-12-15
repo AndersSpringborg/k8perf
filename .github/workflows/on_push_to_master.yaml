@@ -11,7 +11,7 @@ jobs:
     if: startsWith(github.event.ref, 'refs/tags') && github.repository_owner == '888aaen'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -35,7 +35,7 @@ jobs:
     #if: github.ref == 'refs/heads/main' && github.repository_owner == '888aaen'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
