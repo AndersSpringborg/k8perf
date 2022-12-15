@@ -29,19 +29,15 @@ if you're not using the script, remember to install the module with the followin
     pip install --editable .
 ```
 
-### Run iperf 3 benchmark on kubernetes
-There are two files in the folder `bandwidth`:
+### Run iperf 3 benchmark on kubernetes without tool
+There are two files in the folder `benchmarks/bandwidth`:
 - the server `iperf3-server.yaml`
 - the client `iperf3-client.yaml`
 
 
 ## Results
-The results of our experiments are located in the results folder.
-
-Images and visualizations of data and analysis are located in the images folder.
-
-visualize.ipynb is a notebook which was used to generate the heatmaps for the iperf3 tests.
-
+- The results of our experiments are located in the `results` folder. 
+- Images and visualizations of data and analysis are located in the `results/images` folder.
 
 #### TODO
 - [ ] add a way to specify the namespace
