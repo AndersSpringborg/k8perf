@@ -1,9 +1,0 @@
-- hosts: kube_workers
-  become: yes
-  collections:
-    - cankush625.multicloudkubernetescluster
-
-  roles:
-    - role: kube_slave
-      kube_join_command: "kubeadm join 54.177.87.125:6443 --token by4g21.ei0eec1pc8x21iti --discovery-token-ca-cert-hash sha256:f42ed865dd061cb50069f583ea67168c12e66ab1ce51162f4ad3d81f27cfdf66"
-      

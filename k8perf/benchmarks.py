@@ -91,8 +91,8 @@ class IPerfBenchmark:
         self.client_node = client_node
         self.server_node = server_node
         self.k8 = KubernetesIntegration(namespace="default")
-        self.server_resources = yaml.load_to_dicts("bandwidth/iperf3-server.yaml")
-        self.client_resources = yaml.load_to_dicts("bandwidth/iperf3-client.yaml")
+        self.server_resources = yaml.load_to_dicts("benchmarks/bandwidth/iperf3-server.yaml")
+        self.client_resources = yaml.load_to_dicts("benchmarks/bandwidth/iperf3-client.yaml")
 
     def run(self) -> dict:
         """Run the iperf3 benchmark and return the results as a dict, from the json parsed output"""
@@ -133,7 +133,7 @@ class IPerfBenchmark:
         sleep(1)
 
     def deploy_client(self, client_node):
-        configs = yaml.load_to_dicts("bandwidth/iperf3-client.yaml")
+        configs = yaml.load_to_dicts("benchmarks/bandwidth/iperf3-client.yaml")
         job = configs[0]
         nodeSelector = {"kubernetes.io/hostname": client_node}
         job["spec"]["template"]["spec"]["nodeSelector"] = nodeSelector

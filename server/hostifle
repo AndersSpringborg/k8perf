@@ -1,9 +1,0 @@
-cat <<EOF>> /etc/hosts
-20.127.41.196 azure-east-d2-2vcpu-8gb azure-east-d2-2vcpu-8gb
-35.89.2.51 aws-west-t2-1vcpu-1gb aws-west-t2-1vcpu-1gb
-52.191.223.250 azure-east-b1-1vcpu-1gb azure-east-b1-1vcpu-1gb
-20.38.170.151 azure-west-d2-2vcpu-8gb azure-west-d2-2vcpu-8gb
-  EOF
-
-
-# all public IPs Virtual machine name nickname
