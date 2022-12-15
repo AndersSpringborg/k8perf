@@ -11,9 +11,7 @@ jobs:
     if: startsWith(github.event.ref, 'refs/tags') && github.repository_owner == '888aaen'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -26,7 +24,7 @@ jobs:
           python -m build
           echo "TAG=${GITHUB_REF#refs/*/}" | tee -a $GITHUB_ENV
       - name: Publish tagged version to PyPI
-        uses: pypa/gh-action-pypi-publish@master
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
@@ -37,14 +35,11 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.repository_owner == '888aaen'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.x"
-      - run: git rev-parse HEAD^2 2>/dev/null >/dev/null || echo NOT_MERGE_COMMIT=1 | tee -a $GITHUB_ENV
       - name: Install dependencies
         with:
           cache: 'pip' # caching pip dependencies
@@ -52,10 +47,9 @@ jobs:
           python -m pip install --upgrade pip build
           python -m pip install -r requirements.txt
       - name: Build
-        run: |
-          python -m build
+        run: python -m build
       - name: Publish prerelease version to PyPI
-        uses: pypa/gh-action-pypi-publish@master
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
