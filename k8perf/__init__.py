@@ -1,10 +1,5 @@
 import setuptools
-import logging
-from rich.logging import RichHandler
+from ._version import version as __version__
 
-FORMAT = "%(message)s"
-logging.basicConfig(
-    level="INFO", format=FORMAT, datefmt="[%X]", handlers=[RichHandler()]
-)
 if __name__ == "__main__":
     setuptools.setup(name="rich")
