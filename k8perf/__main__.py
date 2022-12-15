@@ -10,6 +10,7 @@ import pandas as pandas
 import typer
 from kubernetes import config
 from kubernetes.client import V1NodeList, V1Node
+from kubernetes.config import ConfigException
 from rich.pretty import pprint
 from rich import print
 
@@ -68,13 +69,22 @@ def benchmark_all_nodes(nodes: V1NodeList.items):
         f.write(str(json_results))
 
 
+def find_kubernetes_config():
+    """Find kubernetes config."""
+    try:
+        config.load_kube_config()
+    except ConfigException as e:
+        logging.error(f"Could not load kube config: {e}")
+        raise typer.Abort()
+
 @app.command()
 def run(delete_pods: bool = True, debug: bool = False, json: bool = False, all_nodes: bool = False,
-               plot: bool = False, csv: str = None):
+        plot: bool = False, csv: str = None):
     if debug:
         logging.getLogger().setLevel(logging.DEBUG)
 
     from kubernetes import client
+    find_kubernetes_config()
 
     k8s_api = client.CoreV1Api()
     # nodes = [(node, 1) for node in k8s_api.list_node().items]
