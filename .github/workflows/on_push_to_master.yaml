@@ -32,7 +32,7 @@ jobs:
 
   publish_prerelease:
     name: PyPI - Publish prerelease on merge commit on main
-    if: github.ref == 'refs/heads/main' && github.repository_owner == '888aaen'
+    #if: github.ref == 'refs/heads/main' && github.repository_owner == '888aaen'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
