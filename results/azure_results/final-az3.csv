@@ -1,2 +1,0 @@
-,server_node,client_node,mbps,cpu_host,cpu_client,mean_rtt,retransmits,httpMinResponseTime,httpMaxResponseTime,httpAverageResponseTime
-0,aks-az3-17689621-vmss000000,aks-az3-17689621-vmss000001,9443174387825546.0,24.896871387250012,24.896871387250012,952.0,2868,0,105,1.757978844145821
