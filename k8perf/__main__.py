@@ -17,10 +17,15 @@ from k8perf.benchmark import BenchmarkRunner
 from k8perf.benchmarks import IPerfBenchmark
 from k8perf.util_terminal_ui import terminal_menu, show_result, bytes_to_human_readable
 from rich.progress import Progress, SpinnerColumn, TextColumn
+import logging
+from rich.logging import RichHandler
 
 app = typer.Typer(help="Benchmark runner for network benchmarks.")
 
-config.load_kube_config()
+FORMAT = "%(message)s"
+logging.basicConfig(
+    level="INFO", format=FORMAT, datefmt="[%X]", handlers=[RichHandler()]
+)
 
 
 def parse_benchmark_json(benchmark_json: Dict) -> (float, float, float):
