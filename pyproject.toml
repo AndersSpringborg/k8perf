@@ -32,7 +32,7 @@ k8perf = "k8perf:app"
 
 
 [tool.setuptools]
-packages = ["k8perf", "bandwidth"]
+packages = ["k8perf", "benchmarks"]
 
 [tool.setuptools.package-data]
 bandwidth = ["*.yaml", "*.yml"]
