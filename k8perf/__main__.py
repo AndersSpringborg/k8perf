@@ -13,6 +13,7 @@ from kubernetes.client import V1NodeList, V1Node
 from kubernetes.config import ConfigException
 from rich.pretty import pprint
 from rich import print
+from setuptools_scm import get_version
 
 from k8perf.benchmark import BenchmarkRunner
 from k8perf.benchmarks import IPerfBenchmark
@@ -27,6 +28,13 @@ FORMAT = "%(message)s"
 logging.basicConfig(
     level="INFO", format=FORMAT, datefmt="[%X]", handlers=[RichHandler()]
 )
+
+
+@app.callback()
+def main(version: bool = False):
+    if version:
+        print(f"Awesome CLI Version: {get_version()}")
+        raise typer.Exit()
 
 
 def parse_benchmark_json(benchmark_json: Dict) -> (float, float, float):
@@ -76,6 +84,7 @@ def find_kubernetes_config():
     except ConfigException as e:
         logging.error(f"Could not load kube config: {e}")
         raise typer.Abort()
+
 
 @app.command()
 def run(delete_pods: bool = True, debug: bool = False, json: bool = False, all_nodes: bool = False,
