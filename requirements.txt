@@ -1,5 +1,0 @@
-typer>=0.7.0
-rich>=12.6.0
-kubernetes>=14.0.1
-InquirerPy>=0.3.4
-PyYAML~=6.0
