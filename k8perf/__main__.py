@@ -33,7 +33,7 @@ logging.basicConfig(
 @app.callback()
 def main(version: bool = False):
     if version:
-        print(f"Awesome CLI Version: {get_version()}")
+        print(f"k8perf CLI Version: {get_version()}")
         raise typer.Exit()
 
 
