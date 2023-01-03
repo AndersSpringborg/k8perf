@@ -29,6 +29,15 @@ if you're not using the script, remember to install the module with the followin
     pip install --editable .
 ```
 
+### Releases
+Github actions most of the work for you.
+- At every push to main a new version is released to pypi. These are released at "pre-release" status.
+- To make a new release, create a new tag with the following format: `X.Y.Z`. This will trigger a new release to pypi.
+
+
+You just need to create a new release on github, and the action will take care of the rest.
+
+
 ### Run iperf 3 benchmark on kubernetes without tool
 There are two files in the folder `benchmarks/bandwidth`:
 - the server `iperf3-server.yaml`
