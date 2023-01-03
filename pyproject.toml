@@ -28,6 +28,9 @@ dependencies = [
     "InquirerPy",
     "uplink",
     "PyYAML",
+    "setuptools_scm",
+    "matplotlib",
+    "seaborn",
 ]
 
 [project.scripts]
