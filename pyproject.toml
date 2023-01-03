@@ -32,6 +32,10 @@ dependencies = [
     "matplotlib",
     "seaborn",
 ]
+[project.optional-dependencies]
+dev = [
+  "pytest >= 6.2.5",
+]
 
 [project.scripts]
 k8perf = "k8perf:app"
