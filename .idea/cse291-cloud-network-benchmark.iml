@@ -8,7 +8,7 @@
       <excludeFolder url="file://$MODULE_DIR$/venv/include" />
       <excludeFolder url="file://$MODULE_DIR$/venv/lib" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.10 (cse291-cloud-network-benchmark)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.10 (k8perf)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
