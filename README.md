@@ -53,3 +53,4 @@ There are two files in the folder `benchmarks/bandwidth`:
 - [ ] Run http benchmark until the server is up to 90% cpu usage
 - [ ] loading bar for the benchmark
 - [ ] Stream the output of the benchmark (Use streamlit)
+- [ ] Move plot to "[plot]" depedencies, and make local imports in main, with error message helping to install plots 
