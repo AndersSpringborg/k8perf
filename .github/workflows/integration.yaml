@@ -1,8 +1,8 @@
-permissions:
-  contents: read
+#permissions:
+#  contents: read
 
-jobs:
-  tests:
+#jobs:
+#  tests:
 #    name: ${{ matrix.name }}
 #    runs-on: ${{ matrix.os }}
 #
