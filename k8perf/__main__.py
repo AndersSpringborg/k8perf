@@ -33,7 +33,8 @@ logging.basicConfig(
 @app.callback()
 def main(version: bool = False):
     if version:
-        print(f"k8perf CLI Version: {get_version()}")
+        from k8perf import __version__
+        print(f"k8perf CLI Version: {__version__}")
         raise typer.Exit()
 
 
